@@ -1,0 +1,6 @@
+extern const GeoLayout jers_freerun_arrow_simple_geo[];
+extern Lights1 jers_freerun_arrow_simple_Simple_Arrow_lights;
+extern Vtx jers_freerun_arrow_simple_Simple_Arrow_DL_mesh_layer_7_vtx_0[28];
+extern Gfx jers_freerun_arrow_simple_Simple_Arrow_DL_mesh_layer_7_tri_0[];
+extern Gfx mat_jers_freerun_arrow_simple_Simple_Arrow[];
+extern Gfx jers_freerun_arrow_simple_Simple_Arrow_DL_mesh_layer_7[];

@@ -1,0 +1,7 @@
+extern const GeoLayout jers_freerun_flag_finish_geo[];
+extern u8 jers_freerun_flag_finish_flag_finish_rgba16[];
+extern Vtx jers_freerun_flag_finish_Flag_Finish_DL_mesh_layer_5_vtx_0[4];
+extern Gfx jers_freerun_flag_finish_Flag_Finish_DL_mesh_layer_5_tri_0[];
+extern Gfx mat_jers_freerun_flag_finish_Fast3D_Material[];
+extern Gfx mat_revert_jers_freerun_flag_finish_Fast3D_Material[];
+extern Gfx jers_freerun_flag_finish_Flag_Finish_DL_mesh_layer_5[];

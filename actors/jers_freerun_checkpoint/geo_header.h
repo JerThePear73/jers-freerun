@@ -1,0 +1,9 @@
+extern const GeoLayout jers_freerun_checkpoint_Opacity_Switch_opt1[];
+extern const GeoLayout jers_freerun_checkpoint_geo[];
+extern Lights1 jers_freerun_checkpoint_Fast3D_Material_001_lights;
+extern u8 jers_freerun_checkpoint_checkpoint_gradient_ia8[];
+extern Vtx jers_freerun_checkpoint_Checkpoint_DL_mesh_layer_5_vtx_0[16];
+extern Gfx jers_freerun_checkpoint_Checkpoint_DL_mesh_layer_5_tri_0[];
+extern Gfx mat_jers_freerun_checkpoint_Fast3D_Material_001[];
+extern Gfx mat_revert_jers_freerun_checkpoint_Fast3D_Material_001[];
+extern Gfx jers_freerun_checkpoint_Checkpoint_DL_mesh_layer_5[];

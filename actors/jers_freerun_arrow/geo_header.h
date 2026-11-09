@@ -1,0 +1,11 @@
+extern const GeoLayout jers_freerun_arrow_geo[];
+extern Lights1 jers_freerun_arrow_Arrow_Outline_lights;
+extern u8 jers_freerun_arrow_arrow_env_map_rgba16[];
+extern Vtx jers_freerun_arrow_Arrow_DL_mesh_layer_1_vtx_0[28];
+extern Gfx jers_freerun_arrow_Arrow_DL_mesh_layer_1_tri_0[];
+extern Vtx jers_freerun_arrow_Arrow_DL_mesh_layer_1_vtx_1[28];
+extern Gfx jers_freerun_arrow_Arrow_DL_mesh_layer_1_tri_1[];
+extern Gfx mat_jers_freerun_arrow_Arrow_Env_Map[];
+extern Gfx mat_revert_jers_freerun_arrow_Arrow_Env_Map[];
+extern Gfx mat_jers_freerun_arrow_Arrow_Outline[];
+extern Gfx jers_freerun_arrow_Arrow_DL_mesh_layer_1[];

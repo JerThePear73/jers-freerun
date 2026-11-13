@@ -1,4 +1,4 @@
-freerunCourses = {
+freerunCoursesVanilla = {
     [0] = {
         name = "Castle Grounds",
         map = LEVEL_CASTLE_GROUNDS,
@@ -37,7 +37,87 @@ freerunCourses = {
                 [10] = {x = -6600, y = 0, z = 4600},
                 [11] = {x = -6525, y = 0, z = 6431}
             },
+            [1] = {   
+                [0] = {x = -416, y = 0, z = 6359},
+                [1] = {x = -317, y = 0, z = 4491},
+                [2] = {x = -2622, y = 0, z = 725},
+                [3] = {x = -1739, y = 0, z = -2593},
+                [4] = {x = -3108, y = 847, z = -2288},
+                [5] = {x = -6013, y = 768, z = 2433},
+                [6] = {x = -6526, y = 0, z = 6431},
+            },
         }
     },
-    --[] = {x = , y = , z = },
+    [2] = {
+        name = "Hazy Maze Cave",
+        map = LEVEL_HMC,
+        courses = {
+            [0] = {
+                [0] = {x = -3111, y = 2048, z = 4976},
+                [1] = {x = 318, y = 2048, z = 3666},
+                [2] = {x = 1060, y = 0, z = 2927},
+                [3] = {x = -3221, y = 0, z = 1427},
+                [4] = {x = -3532, y = 1536, z = 708},
+                [5] = {x = -5056, y = 1536, z = 209},
+                [6] = {x = -6541, y = 1536, z = 1507},
+                [7] = {x = -6549, y = 1791, z = 4072},
+                [8] = {x = -7136, y = 2161, z = 7164},
+            },
+        }
+    },
 }
+freerunCoursesStarRoad = {
+    [0] = {
+        name = "Bob-omb Islands",
+        map = LEVEL_BOB,
+        courses = {
+            [0] = {
+                [0] = {x = -1843, y = -1130, z = 534},
+                [1] = {x = -3175, y = -781, z = 2274},
+                [2] = {x = -1731, y = -231, z = 2326},
+                [3] = {x = -511, y = 304, z = 3380},
+                [4] = {x = -3648, y = 304, z = 3803},
+                [5] = {x = -5090, y = -2015, z = 1106},
+                [6] = {x = -3867, y = -2015, z = -1612},
+                [7] = {x = -5897, y = -2116, z = -2726},
+                [8] = {x = -4161, y = -1935, z = -6349},
+                [9] = {x = -1644, y = -1807, z = -3671},
+            },
+        }
+    },
+}
+freerunCoursesEureka = {
+    [0] = {
+        name = "Vibrant Valley",
+        map = LEVEL_BOB,
+        courses = {
+            [0] = {
+                [0] = {x = 2693, y = -2140, z = 1529},
+                [1] = {x = 4982, y = -1534, z = 283},
+                [2] = {x = 6256, y = -1534, z = -1137},
+                [3] = {x = 7479, y = -1053, z = -4062},
+                [4] = {x = 3954, y = -739, z = -4310},
+                [5] = {x = 3129, y = 50, z = -6437},
+                [6] = {x = -219, y = 763, z = -8488},
+                [7] = {x = -2388, y = -1826, z = -7692},
+                [8] = {x = -3597, y = -1018, z = -6658},
+                [9] = {x = -5719, y = -1777, z = -2414},
+                [10] ={x = -5673, y = -399, z = -407},
+                [11] ={x = -5039, y = -1225, z = 2922},
+                [12] ={x = 271, y = -1987, z = 2037},
+            },
+        }
+    },
+}
+
+local function get_romhack()
+    freerunCourses = freerunCoursesVanilla
+    for _,mods in pairs(gActiveMods) do
+        if mods.name == "Star Road" then
+            freerunCourses = freerunCoursesStarRoad
+        elseif mods.name == "\\#ffeb69\\Eureka" then
+            freerunCourses = freerunCoursesEureka
+        end
+    end
+end
+hook_event(HOOK_ON_MODS_LOADED, get_romhack)

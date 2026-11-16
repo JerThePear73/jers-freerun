@@ -400,9 +400,9 @@ freerunCoursesCursedCastles = {
             },
         }
     },
-    [1] = {
+    [2] = {
         name = "Bully's Blazing Bastille",
-        map = LEVEL_WF,
+        map = LEVEL_CCM,
         courses = {
             [0] = {
                 [0]={x = -40, y = 833, z = -5089},
@@ -415,7 +415,7 @@ freerunCoursesCursedCastles = {
             },
         }
     },
-    [2] = {
+    [3] = {
         name = "Sunken Sand Strand",
         map = LEVEL_BBH,
         courses = {

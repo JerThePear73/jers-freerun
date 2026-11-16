@@ -359,6 +359,87 @@ freerunCoursesNewEarth = {
     },
 }
 
+freerunCoursesCursedCastles = {
+    [0] = {
+        name = "Line Clear Frontier",
+        map = LEVEL_BOB,
+        courses = {
+            [0] = {
+                [0]={x = 12209, y = 0, z = -14591},
+                [1]={x = 11631, y = 224, z = -11031},
+                [2]={x = 13316, y = 949, z = -7481},
+                [3]={x = 13132, y = 1782, z = -5319},
+                [4]={x = 10224, y = 2768, z = -5839},
+                [5]={x = 8054, y = 2830, z = -7206},
+                [6]={x = 4689, y = 1719, z = -4894},
+                [7]={x = 1097, y = 2790, z = -4686},
+                [8]={x = -1829, y = 4001, z = -9069},
+                [9]={x = 559, y = 2790, z = -13116},
+                [10]={x = 6281, y = 0, z = -15002},
+                [11]={x = 10283, y = 0, z = -13786},
+            },
+        }
+    },
+    [1] = {
+        name = "Timeworn Temple",
+        map = LEVEL_WF,
+        courses = {
+            [0] = {
+                [0]={x = -2659, y = 2913, z = 3761},
+                [1]={x = -4048, y = 3667, z = 1066},
+                [2]={x = -1842, y = -75, z = -2074},
+                [3]={x = 535, y = 130, z = -1365},
+                [4]={x = 1472, y = 1076, z = -4636},
+                [5]={x = 1451, y = 2195, z = -6050},
+                [6]={x = 6144, y = -75, z = -4521},
+                [7]={x = 6931, y = -75, z = -1242},
+                [8]={x = 5908, y = 922, z = 2740},
+                [9]={x = 3584, y = -75, z = 6342},
+                [10]={x = 1877, y = 2352, z = 8220},
+                [11]={x = -3071, y = 1891, z = 7428},
+            },
+        }
+    },
+    [1] = {
+        name = "Bully's Blazing Bastille",
+        map = LEVEL_WF,
+        courses = {
+            [0] = {
+                [0]={x = -40, y = 833, z = -5089},
+                [1]={x = -6214, y = 833, z = -6689},
+                [2]={x = -8578, y = 833, z = -4352},
+                [3]={x = -9293, y = 833, z = -12940},
+                [4]={x = -6135, y = 833, z = -12993},
+                [5]={x = -6122, y = 2014, z = -10427},
+                [6]={x = -27, y = 2014, z = -10471},
+            },
+        }
+    },
+    [2] = {
+        name = "Sunken Sand Strand",
+        map = LEVEL_BBH,
+        courses = {
+            [0] = {
+                [0]={x = 7105, y = 0, z = 482},
+                [1]={x = -1167, y = 355, z = -6687},
+                [2]={x = -1881, y = 1441, z = -12873},
+                [3]={x = 7176, y = 2710, z = -8456},
+                [4]={x = 7519, y = 2772, z = -2323},
+                [5]={x = 2921, y = 0, z = -3300},
+                [6]={x = -1041, y = 0, z = -1082},
+                [7]={x = -4210, y = 0, z = 459},
+                [8]={x = -9817, y = 0, z = -1988},
+                [9]={x = -10194, y = -45, z = -7231},
+                [10]={x = -8435, y = -42, z = -11501},
+                [11]={x = -6090, y = -46, z = -8936},
+                [12]={x = -7181, y = 0, z = -2949},
+                [13]={x = -81, y = 448, z = 527},
+                [14]={x = 4497, y = 1660, z = 2594},
+            },
+        }
+    },
+}
+
 
 local function get_romhack()
     freerunCourses = freerunCoursesVanilla
@@ -371,6 +452,8 @@ local function get_romhack()
             freerunCourses = freerunCoursesNewEarth
         elseif mods.name == "Nathaniel Bandy's Big House" then
             freerunCourses = freerunCoursesNBBighouse
+        elseif mods.name == "Cursed Castles" or mods.name == "Cursed Castles (FIXED)" then
+            freerunCourses = freerunCoursesCursedCastles
         end
     end
 end

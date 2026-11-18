@@ -33,6 +33,8 @@ for i = 0, (MAX_PLAYERS - 1) do
         frChkpt = 0,
         frCurrLap = 0,
         frMenuStickCooldown = 0,
+        finalTime = "",
+
         createdChkpt = 0,
     }
 end
@@ -108,8 +110,11 @@ hook_mario_action(ACT_FREERUN_DECIDING, act_freerun_deciding)
 
 local function on_packet_recieve(data)
     local g = gGlobalSyncTable
+    local m = gMarioStates[0]
+    local e = gFreerunStates[m.playerIndex]
     if data[0] == 1 then
-        djui_chat_message_create("packet recieved")
+        --djui_chat_message_create("packet recieved")
+        e.freerunIsActive = true
         warp_to_level(freerunCourses[g.frMap].map, 1, freerunAct)
     end
 end
@@ -161,7 +166,7 @@ local function freerun_render_hud()
 
         djui_hud_set_font(FONT_RECOLOR_HUD)
         djui_hud_set_color(255, 255, 255, 255)
-        if e.frChkpt == (#freerunCourses[g.frMap].courses[g.frCourse] + 1) then
+        if e.frChkpt == (#freerunCourses[g.frMap].courses[g.frCourse] + 1) and m.playerIndex == 0 then
             djui_hud_set_color(oscCol, oscCol, 0, 255)
         end
 
@@ -206,6 +211,7 @@ local function freerun_init(type, level, area, node)
         spawn_non_sync_object(id_bhvFreerunPlayerArrow, E_MODEL_FREERUN_PLAYER_ARROW, 0, 0, 0, nil)
         spawn_non_sync_object(id_bhvFreerunCheckpointArrow, E_MODEL_FREERUN_CHECKPOINT_ARROW, 0, 0, 0, nil)
     end
+    network_player_set_description(np, "", 0, 0, 0, 0)
 end
 hook_event(HOOK_ON_LEVEL_INIT, freerun_init)
 
@@ -229,7 +235,7 @@ local function mario_update(m)
     local np = gNetworkPlayers[m.playerIndex]
     local g = gGlobalSyncTable
     if e.freerunIsActive then
-        if is_player_active(m) and e.frChkpt ~= (#freerunCourses[g.frMap].courses[g.frCourse] + 1) and (
+        if is_player_active(m) and e.frChkpt ~= (#freerunCourses[g.frMap].courses[g.frCourse] + 1) and m.playerIndex == 0 and (
             m.action ~= ACT_SPAWN_SPIN_AIRBORNE and
             m.action ~= ACT_SPAWN_SPIN_LANDING and
             m.action ~= ACT_SPAWN_NO_SPIN_AIRBORNE and

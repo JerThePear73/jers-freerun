@@ -14,6 +14,7 @@ end
 local function bhv_checkpoint_loop(o)
     local m = gMarioStates[0]
     local e = gFreerunStates[m.playerIndex]
+    local np = gNetworkPlayers[m.playerIndex]
     local g = gGlobalSyncTable
 
     if e.frChkpt == o.oBehParams then
@@ -28,7 +29,7 @@ local function bhv_checkpoint_loop(o)
         o.oAction = CHECKPOINT_ACT_WAITING
     end
 
-    if obj_check_hitbox_overlap(m.marioObj, o) and o.oAction == CHECKPOINT_ACT_READY then
+    if obj_check_hitbox_overlap(m.marioObj, o) and o.oAction == CHECKPOINT_ACT_READY and m.action & ACT_FLAG_INTANGIBLE == 0 then
         o.oOpacity = 255
         audio_sample_play(SOUND_FREERUN_CHECKPOINT, m.pos, 1)
         e.frChkpt = e.frChkpt + 1
@@ -38,6 +39,7 @@ local function bhv_checkpoint_loop(o)
                 e.frCurrLap = e.frCurrLap + 1
                 play_sound(SOUND_GENERAL2_RIGHT_ANSWER, m.marioObj.header.gfx.cameraToObject)
             else
+                djui_popup_create_global(tostring(np.name).." \\#08f\\finished the race!", 1)
                 audio_sample_play(SOUND_FREERUN_FINISH, m.pos, 1.5)
             end
         end

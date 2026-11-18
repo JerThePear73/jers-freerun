@@ -73,8 +73,8 @@ local function bhv_player_arrow_loop(o)
 
     if chkpt ~= nil then
         cur_obj_unhide()
-        o.oFaceAngleYaw     = obj_angle_to_object(o, chkpt)
-        o.oFaceAnglePitch   = obj_pitch_to_object(o, chkpt)
+        o.oFaceAngleYaw     = approach_s16_asymptotic(o.oFaceAngleYaw, obj_angle_to_object(o, chkpt), 8)
+        o.oFaceAnglePitch   = approach_s16_asymptotic(o.oFaceAnglePitch, obj_pitch_to_object(o, chkpt), 8)
         obj_scale(o, math.clamp((dist_between_objects(o, chkpt)/1000) + 1, 1, 2.5))
     else
         cur_obj_hide()

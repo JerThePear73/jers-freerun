@@ -16,6 +16,7 @@ local function bhv_checkpoint_loop(o)
     local e = gFreerunStates[m.playerIndex]
     local np = gNetworkPlayers[m.playerIndex]
     local g = gGlobalSyncTable
+    local levelData = freerunCourses[g.frCourse]
 
     if e.frChkpt == o.oBehParams then
         o.oAction = CHECKPOINT_ACT_READY
@@ -33,13 +34,13 @@ local function bhv_checkpoint_loop(o)
         o.oOpacity = 255
         audio_sample_play(SOUND_FREERUN_CHECKPOINT, m.pos, 1)
         e.frChkpt = e.frChkpt + 1
-        if e.frChkpt == #freerunCourses[gGlobalSyncTable.frMap].courses[gGlobalSyncTable.frCourse] + 1 then
+        if e.frChkpt == #levelData.checkpoints + 1 then
             if e.frCurrLap < g.frLaps then
-                e.frChkpt = 0
+                e.frChkpt = 1
                 e.frCurrLap = e.frCurrLap + 1
                 play_sound(SOUND_GENERAL2_RIGHT_ANSWER, m.marioObj.header.gfx.cameraToObject)
             else
-                djui_popup_create_global(tostring(np.name).." \\#08f\\finished the race!", 1)
+                djui_popup_create_global(network_player_get_name_color(np)..np.name.."\\#dcdcdc\\ finished the race!\n\\#ff0\\("..timestamp(e.freerunTimer)..")", 1)
                 audio_sample_play(SOUND_FREERUN_FINISH, m.pos, 1.5)
             end
         end

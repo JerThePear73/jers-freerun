@@ -11,13 +11,24 @@ local BITRATE = 32000
 audio_stream_set_loop_points(MUSIC_FREERUN_0, BITRATE * 4.728, BITRATE * 39.740)
 audio_stream_set_looping(MUSIC_FREERUN_0, true)
 
+-- Load Courses
+freerunCourses = {}
+local courseFiles = get_mod_files(get_active_mod(), "courses")
+log_to_console("Freerunning: Loading Courses for '"..CURR_ROMHACK.."'...")
+for _, name in pairs(courseFiles) do
+    local data = require(string.gsub(name, ".lua", ""))
+    if data.hack == CURR_ROMHACK then
+        log_to_console("Freerunning: Loaded Course '"..data.name .. "' ("..name..")")
+        table.insert(freerunCourses, data)
+    end
+end
+
 ACT_FREERUN_DECIDING = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FLAG_INTANGIBLE)
 
 gGlobalSyncTable.frMenuOpen = false
 gGlobalSyncTable.frMenuOffset = 0
 gGlobalSyncTable.frMenuOptions = 0
-gGlobalSyncTable.frMap = 0
-gGlobalSyncTable.frCourse = 0
+gGlobalSyncTable.frCourse = 1
 gGlobalSyncTable.frLaps = 1
 gGlobalSyncTable.builderMode = false
 
@@ -30,8 +41,8 @@ for i = 0, (MAX_PLAYERS - 1) do
     gFreerunStates[i] = {
         freerunIsActive = false,
         freerunTimer = 0,
-        frChkpt = 0,
-        frCurrLap = 0,
+        frChkpt = 1,
+        frCurrLap = 1,
         frMenuStickCooldown = 0,
         finalTime = "",
 
@@ -42,12 +53,12 @@ end
 local function act_freerun_deciding(m)
     local e = gFreerunStates[m.playerIndex]
     local g = gGlobalSyncTable
+    local levelData = freerunCourses[g.frCourse]
     set_mario_animation(m, MARIO_ANIM_RUNNING_UNUSED)
     smlua_anim_util_set_animation(m.marioObj, "jers_freerun_anim_thinking")
     m.marioBodyState.eyeState = MARIO_EYES_LOOK_UP
     local mSoun = m.marioObj.header.gfx.cameraToObject
-    g.frMap = math.clamp(g.frMap, 0, #freerunCourses)
-    g.frCourse = math.clamp(g.frCourse, 0, #freerunCourses[g.frMap].courses)
+    g.frCourse = math.clamp(g.frCourse, 0, #freerunCourses)
     g.frLaps = math.clamp(g.frLaps, 1, 5)
 
     if m.playerIndex == 0 then
@@ -62,9 +73,7 @@ local function act_freerun_deciding(m)
         end
         if g.frMenuOptions >= 0 and g.frMenuOptions < 3 then
             if m.controller.stickX > stickThreshold and e.frMenuStickCooldown == 0 then
-                if g.frMenuOptions == 0 and g.frMap < #freerunCourses then
-                    g.frMap = g.frMap + 1
-                elseif g.frMenuOptions == 1 and g.frCourse < #freerunCourses[g.frMap].courses then
+                if g.frMenuOptions == 0 and g.frCourse < #freerunCourses then
                     g.frCourse = g.frCourse + 1
                 elseif g.frMenuOptions == 2 and g.frLaps < 5 then
                     g.frLaps = g.frLaps + 1
@@ -72,9 +81,7 @@ local function act_freerun_deciding(m)
                 play_sound(SOUND_MENU_EXIT_A_SIGN, mSoun)
                 e.frMenuStickCooldown = stickCooldown
             elseif m.controller.stickX < -stickThreshold and e.frMenuStickCooldown == 0 then
-                if g.frMenuOptions == 0 and g.frMap > 0 then
-                    g.frMap = g.frMap - 1
-                elseif g.frMenuOptions == 1 and g.frCourse > 0 then
+                if g.frMenuOptions == 0 and g.frCourse > 1 then
                     g.frCourse = g.frCourse - 1
                 elseif g.frMenuOptions == 2 and g.frLaps > 1 then
                     g.frLaps = g.frLaps - 1
@@ -87,10 +94,10 @@ local function act_freerun_deciding(m)
         if g.frMenuOptions == 3 and m.input & INPUT_A_PRESSED ~= 0 then
             if not g.builderMode then
                 e.freerunIsActive = true
-                warp_to_level(freerunCourses[g.frMap].map, 1, freerunAct)
+                warp_to_level(levelData.level, levelData.area, freerunAct)
                 network_send(true, {[0] = 1})
             else
-                warp_to_level(freerunCourses[g.frMap].map, 1, 0)
+                warp_to_level(levelData.level, levelData.area, 0)
             end
         end
 
@@ -112,10 +119,11 @@ local function on_packet_recieve(data)
     local g = gGlobalSyncTable
     local m = gMarioStates[0]
     local e = gFreerunStates[m.playerIndex]
+    local levelData = freerunCourses[g.frCourse]
     if data[0] == 1 then
         --djui_chat_message_create("packet recieved")
         e.freerunIsActive = true
-        warp_to_level(freerunCourses[g.frMap].map, 1, freerunAct)
+        warp_to_level(levelData.level, levelData.area, freerunAct)
     end
 end
 hook_event(HOOK_ON_PACKET_RECEIVE, on_packet_recieve)
@@ -134,16 +142,19 @@ function get_checkpoint_from_action(act)
 end
 
 local function freerun_render_hud()
+    hud_hide()
     djui_hud_set_resolution(RESOLUTION_N64)
     local m = gMarioStates[0]
     local e = gFreerunStates[m.playerIndex]
     local np = gNetworkPlayers[m.playerIndex]
     local g = gGlobalSyncTable
     local oscCol = math.abs(math.sin(get_global_timer()*0.3)*255)
-    local width = djui_hud_get_screen_width()
+    local sW = djui_hud_get_screen_width()
+    local sH = djui_hud_get_screen_height()
+    local levelData = freerunCourses[g.frCourse]
 
     if g.frMenuOffset > 1 then
-        local x = width - g.frMenuOffset
+        local x = sW - g.frMenuOffset
         local y = 34
         djui_hud_set_color(0, 0, 0, 150)
         djui_hud_render_rect(x, y, 85, 64)
@@ -151,8 +162,8 @@ local function freerun_render_hud()
         djui_hud_print_text("Freerunning", x + 10, y, 0.5)
         djui_hud_render_rect(x + 8, y + 16, 60, 1)
         local optionsX = x + 16
-        djui_hud_print_text("Map: "..freerunCourses[g.frMap].name, optionsX, y + 20, 0.25)
-        djui_hud_print_text("Course: "..tostring(g.frCourse + 1), optionsX, y + 30, 0.25)
+        djui_hud_print_text("Map: "..levelData.name, optionsX, y + 20, 0.25)
+        djui_hud_print_text(get_level_name(get_level_course_num(levelData.level), levelData.level, levelData.area), optionsX, y + 30, 0.25)
         djui_hud_print_text("Laps: "..tostring(g.frLaps), optionsX, y + 40, 0.25)
         djui_hud_print_text("Start! ", optionsX, y + 50, 0.25)
 
@@ -166,20 +177,24 @@ local function freerun_render_hud()
 
         djui_hud_set_font(FONT_RECOLOR_HUD)
         djui_hud_set_color(255, 255, 255, 255)
-        if e.frChkpt == (#freerunCourses[g.frMap].courses[g.frCourse] + 1) and m.playerIndex == 0 then
+        if e.frChkpt == (#levelData.checkpoints + 1) and m.playerIndex == 0 then
             djui_hud_set_color(oscCol, oscCol, 0, 255)
         end
-
-        local timerSec = math.floor(e.freerunTimer/30) > 9 and tostring(math.floor(e.freerunTimer/30)) or "0"..tostring(math.floor(e.freerunTimer/30))
-        local timerMil = (e.freerunTimer*2 % 60) > 9 and tostring(e.freerunTimer*2 % 60) or "0"..tostring(e.freerunTimer*2 % 60)
-        local freerunTimerDisplay = timerSec..":"..timerMil
-        djui_hud_print_text(freerunTimerDisplay, djui_hud_get_screen_width() - 78, 34, 1)
+        local timerText = timestamp(e.freerunTimer)
+        local timerTextW, timerTextH = djui_hud_measure_text(timerText)
+        djui_hud_print_text(timerText, sW*0.5 - timerTextW*0.5, sH - timerTextH - 10, 1)
 
         djui_hud_set_font(FONT_HUD)
         djui_hud_set_color(255, 255, 255, 255)
-        djui_hud_print_text(tostring(e.frChkpt).."/"..tostring(#freerunCourses[gGlobalSyncTable.frMap].courses[gGlobalSyncTable.frCourse] + 1), width - 62 - (#tostring(e.frChkpt) * 12), 54, 1)
-        djui_hud_print_text("LAP", width - 58, 74, 0.5)
-        djui_hud_print_text(tostring(e.frCurrLap).."/"..tostring(g.frLaps), width - 64 - (#tostring(e.frCurrLap) * 18), 84, 1.5)
+        local chkptText = tostring(e.frChkpt - 1).."/"..tostring(#levelData.checkpoints)
+        local chkptTextW, chkptTextH = djui_hud_measure_text(chkptText)
+        djui_hud_print_text(chkptText, 10, sH - chkptTextH - 10, 1)
+        
+        local lapText = tostring(e.frCurrLap).."/"..tostring(g.frLaps)
+        local lapTextW, lapTextH = djui_hud_measure_text(lapText)
+        djui_hud_print_text(lapText, sW - 10 - lapTextW*1.5, sH - lapTextH*1.5 - 10, 1.5)
+        local lapTitleW, lapTitleH = djui_hud_measure_text("LAP")
+        djui_hud_print_text("LAP", sW - 12 - lapTextW*1.5 - lapTitleW*0.75, sH - lapTitleH*0.75 - 10, 0.75)
     end
 end
 hook_event(HOOK_ON_HUD_RENDER_BEHIND, freerun_render_hud)
@@ -189,6 +204,7 @@ local function freerun_init(type, level, area, node)
     local e = gFreerunStates[m.playerIndex]
     local np = gNetworkPlayers[m.playerIndex]
     local g = gGlobalSyncTable
+    local levelData = freerunCourses[g.frCourse]
 
     if np.currActNum ~= freerunAct then
         e.freerunIsActive = false
@@ -198,12 +214,12 @@ local function freerun_init(type, level, area, node)
     end
 
     audio_stream_stop(MUSIC_FREERUN_0)
-    e.frChkpt = 0
+    e.frChkpt = 1
     e.frCurrLap = 1
     e.freerunTimer = 0
     if e.freerunIsActive and m.playerIndex == 0 then
-        for i=0, #freerunCourses[g.frMap].courses[g.frCourse] do
-            local chkpt_pos = freerunCourses[g.frMap].courses[g.frCourse][i]
+        for i = 1, #levelData.checkpoints do
+            local chkpt_pos = levelData.checkpoints[i]
             spawn_non_sync_object(id_bhvFreerunCheckpoint, E_MODEL_FREERUN_CHECKPOINT, chkpt_pos.x, chkpt_pos.y, chkpt_pos.z, function(o)
                 o.oBehParams = i
             end)
@@ -234,8 +250,9 @@ local function mario_update(m)
     local e = gFreerunStates[m.playerIndex]
     local np = gNetworkPlayers[m.playerIndex]
     local g = gGlobalSyncTable
+    local levelData = freerunCourses[g.frCourse]
     if e.freerunIsActive then
-        if is_player_active(m) and e.frChkpt ~= (#freerunCourses[g.frMap].courses[g.frCourse] + 1) and m.playerIndex == 0 and (
+        if is_player_active(m) and e.frChkpt ~= (#levelData.checkpoints + 1) and m.playerIndex == 0 and (
             m.action ~= ACT_SPAWN_SPIN_AIRBORNE and
             m.action ~= ACT_SPAWN_SPIN_LANDING and
             m.action ~= ACT_SPAWN_NO_SPIN_AIRBORNE and
@@ -244,7 +261,7 @@ local function mario_update(m)
             e.freerunTimer = e.freerunTimer + 1
         end
     end
-    if m.action == ACT_IDLE and network_is_server() and m.controller.buttonPressed & Y_BUTTON ~= 0 and not e.freerunIsActive then
+    if m.action == ACT_IDLE and network_is_server() and m.controller.buttonPressed & Y_BUTTON ~= 0 then
         set_mario_action(m, ACT_FREERUN_DECIDING, 0)
         --e.freerunIsActive = not e.freerunIsActive
         --warp_to_level(np.currLevelNum, 1, np.currActNum)

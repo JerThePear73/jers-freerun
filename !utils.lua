@@ -1,19 +1,32 @@
+function trim(s)
+    local l = 1
+    while string.sub(s, l, l) == ' ' do
+        l = l + 1
+    end
+    local r = string.len(s)
+    while string.sub(s, r, r) == ' ' do
+        r = r - 1
+    end
+    return string.sub(s, l, r)
+end
+
 CURR_ROMHACK = "sm64"
 for i in pairs(gActiveMods) do
     local mod = gActiveMods[i]
-    if mod.incompatible ~= nil then
+    if mod.incompatible then
         if mod.incompatible:find("romhack") then
             CURR_ROMHACK = mod.name
         end
     end
-    if mod.category ~= nil then
+    if mod.category then
         if mod.category:find("romhack") then
             CURR_ROMHACK = mod.name
         end
     end
     CURR_ROMHACK = CURR_ROMHACK:gsub("\\(.-)\\", "")
-    CURR_ROMHACK = CURR_ROMHACK:gsub(" ", "-")
-    CURR_ROMHACK = string.lower(CURR_ROMHACK)
+    CURR_ROMHACK = CURR_ROMHACK:gsub('%W','')
+    CURR_ROMHACK = CURR_ROMHACK:gsub('v%d+','')
+    CURR_ROMHACK = CURR_ROMHACK:lower()
 end
 
 

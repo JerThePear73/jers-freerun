@@ -17,10 +17,11 @@ local courseFiles = get_mod_files(get_active_mod(), "courses/"..CURR_ROMHACK)
 log_to_console("Freerunning: Loading Courses for '"..CURR_ROMHACK.."' from 'courses/"..CURR_ROMHACK.."'...")
 for _, name in pairs(courseFiles) do
     local data = require(string.gsub(name, ".lua", ""))
-    if data.hack == CURR_ROMHACK then
-        log_to_console("Freerunning: Loaded Course '"..data.name .. "' ("..name..")")
-        table.insert(freerunCourses, data)
-    end
+    log_to_console("Freerunning: Loaded Course '"..data.name .. "' ("..name..")")
+    table.insert(freerunCourses, data)
+end
+if #freerunCourses == 0 then
+    log_to_console("Freerunning: No Courses Found!", CONSOLE_MESSAGE_ERROR)
 end
 
 ACT_FREERUN_DECIDING = allocate_mario_action(ACT_FLAG_STATIONARY | ACT_FLAG_INTANGIBLE)

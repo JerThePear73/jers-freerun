@@ -13,8 +13,8 @@ audio_stream_set_looping(MUSIC_FREERUN_0, true)
 
 -- Load Courses
 freerunCourses = {}
-local courseFiles = get_mod_files(get_active_mod(), "courses")
-log_to_console("Freerunning: Loading Courses for '"..CURR_ROMHACK.."'...")
+local courseFiles = get_mod_files(get_active_mod(), "courses/"..CURR_ROMHACK)
+log_to_console("Freerunning: Loading Courses for '"..CURR_ROMHACK.."' from 'courses/"..CURR_ROMHACK.."'...")
 for _, name in pairs(courseFiles) do
     local data = require(string.gsub(name, ".lua", ""))
     if data.hack == CURR_ROMHACK then

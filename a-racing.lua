@@ -312,6 +312,22 @@ local function freerun_stars(m, o, type)
 end
 hook_event(HOOK_ALLOW_INTERACT, freerun_stars)
 
+local function freerun_death()
+    local m = gMarioStates[0] ---@type MarioState
+    local e = gFreerunStates[0]
+    local g = gGlobalSyncTable
+    if e.freerunIsActive then
+        local levelData = freerunCourses[g.frCourse]
+        local lastChkptPos = levelData.checkpoints[(e.frChkpt - 1)%#levelData.checkpoints] or m.spawnInfo.startPos
+        m.pos.x = lastChkptPos.x
+        m.pos.y = lastChkptPos.y
+        m.pos.z = lastChkptPos.z
+        mario_pop_bubble(m)
+        return false
+    end
+end
+hook_event(HOOK_ON_DEATH, freerun_death)
+
 hook_chat_command("build-mode", "- toggle freerun track builder mode. X to save positions. Won't kick you out of levels.", function(msg)
     local g = gGlobalSyncTable
     if not network_is_server() then

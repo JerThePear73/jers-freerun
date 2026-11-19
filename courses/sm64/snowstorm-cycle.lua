@@ -1,5 +1,5 @@
 return {
-    name = "Cold Shit",
+    name = "Snowstorm Cycle",
     hack = "sm64",
     level = LEVEL_SL,
     area = 1,
